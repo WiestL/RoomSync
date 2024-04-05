@@ -39,5 +39,23 @@ db.serialize(() => {
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (userId) REFERENCES users (id)
     );`);
+
+    // Create the Groups table including the invitationCode
+    db.run(`CREATE TABLE IF NOT EXISTS groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      groupName TEXT NOT NULL,
+      invitationCode TEXT NOT NULL UNIQUE,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );`);
+
+    // Create the GroupMembers table
+    db.run(`CREATE TABLE IF NOT EXISTS group_members (
+      userId INTEGER NOT NULL,
+      groupId INTEGER NOT NULL,
+      joinedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (userId, groupId),
+      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (groupId) REFERENCES groups(id) ON DELETE CASCADE 
+    );`);
   });
   

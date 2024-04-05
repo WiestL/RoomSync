@@ -2,9 +2,10 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config(); 
-const { createUser, findUserByEmail } = require('../models/user');
+const { createUser, findUserByEmail, findUserById, updateUserById, deleteUserById } = require('../models/user');
 
-const loginUser = async (req, res) => {
+//Logs in user
+exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await findUserByEmail(email);
@@ -22,9 +23,9 @@ const loginUser = async (req, res) => {
         res.status(500).send({ error: "An internal error occurred. Please try again." });
     }
 };
-// Assuming hashPassword function is defined above or imported
 
-const registerUser = async (req, res) => {
+//Registers new user
+exports.registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         const passwordHash = await hashPassword(password);
@@ -35,6 +36,7 @@ const registerUser = async (req, res) => {
     }
 };
 
+//Encrypts Password
 const hashPassword = async (password) => {
     const saltRounds = 10; // Recommended value for salt rounds
     try {
@@ -48,4 +50,52 @@ const hashPassword = async (password) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+// Get a user's profile by their ID
+exports.getUserProfile = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assumed to be set from the JWT token after authMiddleware
+        const user = await findUserById(userId);
+        if (!user) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+        // Exclude sensitive information like password hashes
+        delete user.passwordHash;
+        res.send(user);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to retrieve user profile' });
+    }
+};
+
+// Update a user's profile
+exports.updateUserProfile = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assumed to be set from the JWT token after authMiddleware
+        const updates = req.body; // Assuming body contains what you want to update
+        // Validate updates if necessary, then...
+        const result = await updateUserById(userId, updates);
+        if (result) {
+            res.send({ message: 'User profile updated successfully' });
+        } else {
+            res.status(404).send({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to update user profile' });
+    }
+};
+
+// Delete a user's account
+exports.deleteUserAccount = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assumed to be set from the JWT token after authMiddleware
+        const result = await deleteUserById(userId);
+        if (result) {
+            res.send({ message: 'User account deleted successfully' });
+        } else {
+            res.status(404).send({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to delete user account' });
+    }
+};
+
+//module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, deleteUserAccount };
