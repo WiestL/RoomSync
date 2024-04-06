@@ -1,5 +1,6 @@
 // routes/userRoutes.js
 const express = require('express');
+const authMiddleware = require('../middleware/authMiddleware');
 const { 
     registerUser,
     loginUser,
@@ -7,8 +8,8 @@ const {
     updateUserProfile,
     deleteUserAccount
 } = require('../controllers/userController');
-const router = express.Router();
 
+const router = express.Router();
 // Route for user registration
 router.post('/register', registerUser);
 
@@ -23,6 +24,5 @@ router.put('/profile', authMiddleware, updateUserProfile);
 
 // Route to delete user account
 router.delete('/account', authMiddleware, deleteUserAccount);
-
 
 module.exports = router;

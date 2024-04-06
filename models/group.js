@@ -1,5 +1,6 @@
 // models/groups.js
 
+const { group } = require('console');
 const db = require('../database.js');
 const crypto = require('crypto');
 
@@ -47,8 +48,40 @@ const addMemberToGroup = (userId, groupId) => {
     });
 };
 
+const checkGroupMembership = (userId, groupId) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT 1 FROM group_members WHERE userId = ? AND groupId = ?`;
+        db.get(sql, [userId, groupId], (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(!!row); // Convert row existence to boolean
+            }
+        });
+    });
+};
+
+const fetchGroupStatusUpdates = (groupId) => {
+    return new Promise((resolve, reject) => {
+        const sql = `
+            SELECT status_updates.* FROM status_updates
+            JOIN group_members ON status_updates.userId = group_members.userId
+            WHERE group_members.groupId = ?
+            ORDER BY status_updates.timestamp DESC`;
+        db.all(sql, [groupId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+};
+
 module.exports = {
     createGroup,
     getGroupByInvitationCode,
-    addMemberToGroup
+    addMemberToGroup,
+    checkGroupMembership,
+    fetchGroupStatusUpdates
 };

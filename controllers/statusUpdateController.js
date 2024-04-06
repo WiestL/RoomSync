@@ -63,10 +63,21 @@ exports.deleteStatusUpdate = async (req, res) => {
     }
 }
 
-/*module.exports = { 
-    postStatusUpdate,
-    getAllStatusUpdates,
-    getStatusUpdate,
-    updateStatusUpdate,
-    deleteStatusUpdate
- };*/
+exports.getGroupStatuses = async(req, res) =>{
+    const { groupId} = req.params;
+    const userId = req.user.id;
+
+    try{
+        const isMember = await checkGroupMembership(userId, groupId);
+        if(!isMember)
+        {
+            return res.status(403).send({error: "User is not a member of the group"});
+        }
+
+        const statuses = await fetchGroupStatusUpdates(groupId);
+        res.status(200).send(statuses);
+    } catch (error){
+        res.status(500).send({error: error.message});
+    }
+};
+   

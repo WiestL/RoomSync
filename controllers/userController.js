@@ -71,7 +71,6 @@ exports.updateUserProfile = async (req, res) => {
     try {
         const userId = req.user.id; // Assumed to be set from the JWT token after authMiddleware
         const updates = req.body; // Assuming body contains what you want to update
-        // Validate updates if necessary, then...
         const result = await updateUserById(userId, updates);
         if (result) {
             res.send({ message: 'User profile updated successfully' });

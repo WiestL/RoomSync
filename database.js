@@ -57,5 +57,17 @@ db.serialize(() => {
       FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (groupId) REFERENCES groups(id) ON DELETE CASCADE 
     );`);
+
+    // Create the GroceryItems table
+    db.run(`CREATE TABLE IF NOT EXISTS grocery_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      groupId INTEGER NOT NULL,
+      itemName TEXT NOT NULL,
+      quantity INTEGER NOT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      completed BOOLEAN NOT NULL DEFAULT 0,
+      FOREIGN KEY (groupId) REFERENCES groups(id) ON DELETE CASCADE
+  );`);
+  
   });
   

@@ -1,24 +1,29 @@
 // controllers/groupController.js
 
-const { createGroup, getGroupByInvitationCode, addMemberToGroup } = require("../models/group");
+const { createGroup, getGroupByInvitationCode, addMemberToGroup, fetchGroupStatusUpdates, checkGroupMembership } = require("../models/group");
 
 //Creates a new group
 exports.createGroup = async (req, res) => {
-    try{
+    try {
         const { groupName } = req.body;
-        const userId = req.user.id; // The ID of the user creating the group
+        const userId = req.user.id;  // Ensure req.user is properly populated by your auth middleware
 
         // Create the group and get its ID and invitationCode
-        const { groupId, invitationCode } = await createGroup(groupName);
+        const group = await createGroup(groupName);
+        if (!group || !group.id) {
+            return res.status(400).send({ error: "Failed to create group" });
+        }
 
         // Add the creator as a member of the group
-        await addMemberToGroup(userId, groupId);
+        await addMemberToGroup(userId, group.id);
 
-        res.status(201).send({ groupId, invitationCode, message: "Group created successfully"});
-    } catch (error){
+        res.status(201).send({ groupId: group.id, invitationCode: group.invitationCode, message: "Group created successfully"});
+    } catch (error) {
+        console.error("Create Group Error:", error);
         res.status(500).send({ error: error.message });
     }
 };
+
 
 //Adds a user to an existing group
 exports.joinGroup = async (req, res) => {
@@ -53,4 +58,24 @@ exports.joinGroupByInvitationCode = async (req, res) => {
     }
 };
 
-//module.exports = { createGroup, joinGroup, joinGroupByInvitationCode};
+exports.getGroupStatuses = async (req, res) => {
+    const groupId = req.params.groupId;
+    const userId = req.user.id; // Assuming req.user is populated from authentication middleware
+
+    console.log("Checking membership for user:", userId, "in group:", groupId);
+
+    try {
+        const isMember = await checkGroupMembership(userId, groupId);
+        console.log("Membership check result:", isMember);
+
+        if (!isMember) {
+            return res.status(403).send({ error: "Access denied: User is not a member of the group." });
+        }
+
+        const statuses = await fetchGroupStatusUpdates(groupId);
+        res.status(200).json(statuses);
+    } catch (error) {
+        console.error("Error fetching group statuses:", error);
+        res.status(500).send({ error: "An error occurred while fetching group status updates." });
+    }
+};
