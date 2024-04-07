@@ -61,6 +61,19 @@ const checkGroupMembership = (userId, groupId) => {
     });
 };
 
+const findGroupByUserId = (userId) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM group_members WHERE userId = ?`;
+        db.get(sql, [userId], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result); // Assume it returns the group ID if found
+            }
+        });
+    });
+};
+
 const fetchGroupStatusUpdates = (groupId) => {
     return new Promise((resolve, reject) => {
         const sql = `

@@ -24,6 +24,19 @@ exports.createGroup = async (req, res) => {
     }
 };
 
+exports.checkGroupMembership = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const group = await findGroupByUserId(userId); // Implement this function in your model
+        if (group) {
+            res.json(group);
+        } else {
+            res.status(404).send({ message: "No group found for this user." });
+        }
+    } catch (error) {
+        res.status(500).send({ message: "Failed to check group membership.", error });
+    }
+};
 
 //Adds a user to an existing group
 exports.joinGroup = async (req, res) => {

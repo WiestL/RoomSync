@@ -6,7 +6,7 @@ exports.addGroceryItemToGroup = async (req, res) => {
     const userId = req.user.id;
     const { groupId } = req.params;
     const { itemName, quantity } = req.body;
-
+    console.log("Received for adding item:", { userId, groupId, itemName, quantity });
     try {
         if (!(await checkGroupMembership(userId, groupId))) {
             return res.status(403).send({ message: "Access denied: User is not a member of this group." });
@@ -62,7 +62,6 @@ exports.updateGroceryItemDetails = async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 };
-
 
 // Deletes a grocery item
 exports.deleteGroceryItemById = async (req, res) => {

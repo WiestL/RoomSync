@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const statusUpdateRoutes = require('./routes/statusUpdateRoutes');
 const groupRoutes = require('./routes/groupRoutes');
@@ -9,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); // Middleware for parsing JSON bodies
+app.use(cors());
 
 // Use routes
 app.use('/api/users', userRoutes);
