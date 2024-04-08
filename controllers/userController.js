@@ -16,7 +16,7 @@ exports.loginUser = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).send({ error: "Login failed! Check authentication credentials" });
         }
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
         res.status(200).send({ token });
     } catch (error) {
         console.error('Login error:', error);

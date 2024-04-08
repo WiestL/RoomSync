@@ -1,6 +1,6 @@
 // controllers/groupController.js
 
-const { createGroup, getGroupByInvitationCode, addMemberToGroup, fetchGroupStatusUpdates, checkGroupMembership } = require("../models/group");
+const { createGroup, getGroupByInvitationCode, addMemberToGroup, fetchGroupStatusUpdates, checkGroupMembership, findGroupByUserId } = require("../models/group");
 
 //Creates a new group
 exports.createGroup = async (req, res) => {
@@ -27,16 +27,18 @@ exports.createGroup = async (req, res) => {
 exports.checkGroupMembership = async (req, res) => {
     const { userId } = req.params;
     try {
-        const group = await findGroupByUserId(userId); // Implement this function in your model
+        const group = await findGroupByUserId(userId);
         if (group) {
             res.json(group);
         } else {
             res.status(404).send({ message: "No group found for this user." });
         }
     } catch (error) {
-        res.status(500).send({ message: "Failed to check group membership.", error });
+        console.error("Failed to check group membership: ", error);
+        res.status(500).send({ message: "Failed to check group membership.", error: error.toString() });
     }
 };
+
 
 //Adds a user to an existing group
 exports.joinGroup = async (req, res) => {

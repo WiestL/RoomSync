@@ -4,9 +4,18 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
-        const storedUserData = localStorage.getItem('user');
-        return storedUserData ? JSON.parse(storedUserData) : null;
+        // Initially, we do not know the user state until we check localStorage
+        return null;
     });
+    const [loading, setLoading] = useState(true);  // Initial state is loading
+
+    useEffect(() => {
+        const storedUserData = localStorage.getItem('user');
+        if (storedUserData) {
+            setUser(JSON.parse(storedUserData));  // Set user if found in localStorage
+        }
+        setLoading(false);  // Set loading to false regardless of user presence
+    }, []);
 
     // Log to check if the user is being loaded properly
     useEffect(() => {
@@ -14,7 +23,7 @@ export const UserProvider = ({ children }) => {
     }, [user]);
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, loading }}>
             {children}
         </UserContext.Provider>
     );

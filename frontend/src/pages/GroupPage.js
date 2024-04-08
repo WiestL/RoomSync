@@ -32,12 +32,13 @@ const GroupPage = () => {
   }, [user?.id]);  // Dependency here is crucial for re-checking when user changes
 
   useEffect(() => {
+    console.log('Current user in context:', user);
     if (user?.id) {
       fetchGroupDetails();
     } else {
       setError('No user ID found. Please log in.'); // Set an initial error if no user is logged in
     }
-  }, [user?.id, fetchGroupDetails]);  // Include user?.id in the dependency array
+  }, [user, user?.id, fetchGroupDetails]);  // Include user?.id in the dependency array
 
   const handleJoinGroup = async () => {
     if (!user?.id) {

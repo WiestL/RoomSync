@@ -96,5 +96,6 @@ module.exports = {
     getGroupByInvitationCode,
     addMemberToGroup,
     checkGroupMembership,
+    findGroupByUserId,
     fetchGroupStatusUpdates
 };
