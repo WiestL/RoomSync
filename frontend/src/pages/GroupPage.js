@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -10,11 +12,11 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import React, { useState, useEffect, useCallback } from 'react';
 import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList } from '../services/groupService';
 import { useUserContext } from '../contexts/UserContext';
 
 const GroupPage = () => {
+  const navigate = useNavigate();
   const { user } = useUserContext();
   const [groupDetails, setGroupDetails] = useState(null);
   const [invitationCode, setInvitationCode] = useState('');
@@ -22,24 +24,23 @@ const GroupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [groupGroceryList, setGroupGroceryList] = useState([]);
   const [groupStatuses, setGroupStatuses] = useState([]);
-  //const userNamesRef = useRef({});
 
   const fetchDetails = useCallback(async () => {
     if (!user?.id) {
       setError('No user ID found.');
-      return; // Early return if user ID is not available
+      return;
     }
     setIsLoading(true);
     try {
       const details = await checkGroupMembership(user.id);
       if (details && details.groupId) {
         const statuses = await getGroupStatuses(details.groupId);
-        setGroupStatuses(statuses);
         const groceries = await getGroupGroceryList(details.groupId);
+        setGroupStatuses(statuses);
         setGroupGroceryList(groceries);
         setGroupDetails(details);
+        localStorage.setItem('groupDetails', JSON.stringify({ groupId: details.groupId }));
       } else {
-        setGroupDetails(null);
         setError("You are not in any group.");
       }
     } catch (err) {
@@ -48,12 +49,12 @@ const GroupPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]); // Dependency on user?.id to update fetchDetails when user.id changes
+  }, [user?.id]);
 
   useEffect(() => {
-    fetchDetails(); // Call fetchDetails when the component mounts or user.id changes
-  }, [fetchDetails]); // Only re-run the effect if fetchDetails changes
-  
+    fetchDetails();
+  }, [fetchDetails]);
+
   const handleJoinGroup = async () => {
     if (!user?.id) {
       setError('No user ID found. Please log in before joining a group.');
@@ -67,7 +68,7 @@ const GroupPage = () => {
     try {
       const result = await joinGroupWithCode(invitationCode);
       if (result && result.success) {
-        await fetchDetails();  // fetchDetails after joining a new group
+        fetchDetails();
       } else {
         setError('Failed to join the group with provided code.');
       }
@@ -79,6 +80,10 @@ const GroupPage = () => {
     }
   };
 
+  const goToEditPage = () => {
+    navigate('/edit'); // Adjust the route as necessary
+  };
+
   return (
     <Container component="main" maxWidth="sm">
       {error && <Typography color="error">{error}</Typography>}
@@ -86,42 +91,29 @@ const GroupPage = () => {
       {groupDetails ? (
         <Card sx={{ mt: 4 }}>
           <CardContent>
-            {/* ...other content */}
+            <Typography variant="h5">Your Group</Typography>
+            <Typography variant="subtitle1">Group Name: {groupDetails.name}</Typography>
             <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
             <List>
-            {groupStatuses.map(status => (
-                <React.Fragment key={status.id}>
-                    <ListItem alignItems="flex-start">
-                        <ListItemText 
-                            primary={`${status.name}: ${status.statusText}`} 
-                            secondary={
-                                <>
-                                    <Typography component="span" variant="body2">
-                                        {new Date(status.timestamp).toLocaleString()}
-                                    </Typography>
-                                    {status.wantVisitors ? " - Open to visitors" : " - Not open to visitors"}
-                                </>
-                            } 
-                        />
-                    </ListItem>
-                    <Divider component="li" />
-                </React.Fragment>
-            ))}
+              {groupStatuses.map(status => (
+                <ListItem key={status.id}>
+                  <ListItemText primary={`${status.name}: ${status.statusText}`} secondary={new Date(status.timestamp).toLocaleString()} />
+                  <Divider />
+                </ListItem>
+              ))}
             </List>
             <Typography variant="h6" sx={{ mt: 2 }}>Grocery List</Typography>
             <List>
               {groupGroceryList.map(item => (
-                <React.Fragment key={item.id}>
-                  <ListItem>
-                    <ListItemText 
-                      primary={item.itemName} 
-                      secondary={`Quantity: ${item.quantity}`}
-                    />
-                  </ListItem>
-                  <Divider component="li" />
-                </React.Fragment>
+                <ListItem key={item.id}>
+                  <ListItemText primary={item.itemName} secondary={`Quantity: ${item.quantity}`} />
+                  <Divider />
+                </ListItem>
               ))}
             </List>
+            <Button variant="contained" color="primary" onClick={goToEditPage} sx={{ mt: 2 }}>
+              Manage Group
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -151,6 +143,5 @@ const GroupPage = () => {
     </Container>
   );
 };
-
 
 export default GroupPage;
