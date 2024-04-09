@@ -8,6 +8,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import React, { useState, useEffect, useCallback } from 'react';
 import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList } from '../services/groupService';
@@ -86,15 +87,24 @@ const GroupPage = () => {
           <CardContent>
             <Typography variant="h5">Your Group</Typography>
             <Typography variant="subtitle1">Group Name: {groupDetails.name}</Typography>
-            {/* Additional group info */}
             <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
             <List>
               {groupStatuses.map(status => (
                 <React.Fragment key={status.id}>
-                  <ListItem>
-                    <Typography variant="body1">{status.message} - {new Date(status.timestamp).toLocaleString()}</Typography>
+                  <ListItem alignItems="flex-start">
+                    <ListItemText 
+                      primary={status.statusText} 
+                      secondary={
+                        <>
+                          <Typography component="span" variant="body2">
+                            {new Date(status.timestamp).toLocaleString()}
+                          </Typography>
+                          {status.wantVisitors ? " - Open to visitors" : " - Not open to visitors"}
+                        </>
+                      } 
+                    />
                   </ListItem>
-                  <Divider />
+                  <Divider component="li" />
                 </React.Fragment>
               ))}
             </List>
@@ -103,9 +113,12 @@ const GroupPage = () => {
               {groupGroceryList.map(item => (
                 <React.Fragment key={item.id}>
                   <ListItem>
-                    <Typography variant="body1">{item.name} - Quantity: {item.quantity}</Typography>
+                    <ListItemText 
+                      primary={item.itemName} 
+                      secondary={`Quantity: ${item.quantity}`}
+                    />
                   </ListItem>
-                  <Divider />
+                  <Divider component="li" />
                 </React.Fragment>
               ))}
             </List>
