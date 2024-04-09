@@ -15,14 +15,19 @@ const createStatusUpdate = (userId, statusText, wantVisitors) => {
     });
 };
 
-//Get all status updates
-const getStatusUpdates = () => {
+//Get all status updates along with user names
+const getStatusUpdates = (groupId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM status_updates';
-        db.all(sql,[],(err, rows) => {
-            if(err) {
+        const sql = `
+            SELECT status_updates.*, users.name 
+            FROM status_updates 
+            JOIN users ON status_updates.userId = users.id
+            WHERE status_updates.groupId = ?`;
+        db.all(sql, [groupId], (err, rows) => {
+            if (err) {
+                console.error('SQL Error:', err);
                 reject(err);
-            }else{
+            } else {
                 resolve(rows);
             }
         });

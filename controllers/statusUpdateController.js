@@ -11,12 +11,13 @@ exports.postStatusUpdate = async (req, res) => {
     }
 };
 
-exports.getAllStatusUpdates = async (req,res)=> {
-    try{
-        const updates = await this.getStatusUpdates();
-        res.status(200).send(updates);
-    } catch(error){
-        res.status(500).send({error: error.message});
+exports.getAllStatusUpdates = async (req, res) => {
+    try {
+        const statuses = await getStatusUpdates();
+        res.status(200).json(statuses);
+    } catch (error) {
+        console.error('Failed to fetch status updates:', error);
+        res.status(500).send({ error: 'Failed to retrieve status updates' });
     }
 };
 

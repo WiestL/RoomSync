@@ -77,10 +77,11 @@ const findGroupByUserId = (userId) => {
 const fetchGroupStatusUpdates = (groupId) => {
     return new Promise((resolve, reject) => {
         const sql = `
-            SELECT status_updates.* FROM status_updates
-            JOIN group_members ON status_updates.userId = group_members.userId
-            WHERE group_members.groupId = ?
-            ORDER BY status_updates.timestamp DESC`;
+        SELECT status_updates.*, users.name FROM status_updates
+        JOIN users ON status_updates.userId = users.id
+        JOIN group_members ON status_updates.userId = group_members.userId
+        WHERE group_members.groupId = ?
+        ORDER BY status_updates.timestamp DESC`;
         db.all(sql, [groupId], (err, rows) => {
             if (err) {
                 reject(err);

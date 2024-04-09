@@ -30,6 +30,15 @@ export const loginUser = async (userData) => {
     }
 };
   
+export const getUserProfileById = async (userId) => {
+    try {
+      const response = await axios.get(`/api/users/profile/${userId}`);
+      return response.data; // This should contain the user profile data
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error; // You may want to handle this error in your component
+    }
+  };
 
 export const registerUser = async (userData) => {
     const response = await axios.post(`${API_URL}/users/register`, userData);

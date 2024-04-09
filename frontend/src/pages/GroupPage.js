@@ -22,6 +22,7 @@ const GroupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [groupGroceryList, setGroupGroceryList] = useState([]);
   const [groupStatuses, setGroupStatuses] = useState([]);
+  //const userNamesRef = useRef({});
 
   const fetchDetails = useCallback(async () => {
     if (!user?.id) {
@@ -52,7 +53,7 @@ const GroupPage = () => {
   useEffect(() => {
     fetchDetails(); // Call fetchDetails when the component mounts or user.id changes
   }, [fetchDetails]); // Only re-run the effect if fetchDetails changes
-
+  
   const handleJoinGroup = async () => {
     if (!user?.id) {
       setError('No user ID found. Please log in before joining a group.');
@@ -85,28 +86,27 @@ const GroupPage = () => {
       {groupDetails ? (
         <Card sx={{ mt: 4 }}>
           <CardContent>
-            <Typography variant="h5">Your Group</Typography>
-            <Typography variant="subtitle1">Group Name: {groupDetails.name}</Typography>
+            {/* ...other content */}
             <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
             <List>
-              {groupStatuses.map(status => (
+            {groupStatuses.map(status => (
                 <React.Fragment key={status.id}>
-                  <ListItem alignItems="flex-start">
-                    <ListItemText 
-                      primary={status.statusText} 
-                      secondary={
-                        <>
-                          <Typography component="span" variant="body2">
-                            {new Date(status.timestamp).toLocaleString()}
-                          </Typography>
-                          {status.wantVisitors ? " - Open to visitors" : " - Not open to visitors"}
-                        </>
-                      } 
-                    />
-                  </ListItem>
-                  <Divider component="li" />
+                    <ListItem alignItems="flex-start">
+                        <ListItemText 
+                            primary={`${status.name}: ${status.statusText}`} 
+                            secondary={
+                                <>
+                                    <Typography component="span" variant="body2">
+                                        {new Date(status.timestamp).toLocaleString()}
+                                    </Typography>
+                                    {status.wantVisitors ? " - Open to visitors" : " - Not open to visitors"}
+                                </>
+                            } 
+                        />
+                    </ListItem>
+                    <Divider component="li" />
                 </React.Fragment>
-              ))}
+            ))}
             </List>
             <Typography variant="h6" sx={{ mt: 2 }}>Grocery List</Typography>
             <List>
