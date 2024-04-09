@@ -67,9 +67,9 @@ exports.joinGroupByInvitationCode = async (req, res) => {
         }
         
         await addMemberToGroup(userId, group.id);
-        res.status(200).send({ message: "Joined group successfully." });
+        res.status(200).send({ success: true, message: "Joined group successfully." });
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        res.status(500).send({ success: false, error: error.message });
     }
 };
 

@@ -1,20 +1,41 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 function HomePage() {
-  const navigate = useNavigate(); // Use the useNavigate hook
+  const navigate = useNavigate();
 
-  // Function to handle button click
   const goToGroupPage = () => {
-    navigate('/groups'); // Navigate to the GroupPage
+    navigate('/groups');
   };
 
   return (
-    <div>
-      <h1>Welcome to RoomSync!</h1>
-      <button onClick={goToGroupPage}>Go to Group Page</button> 
-      {/* You can add other content or buttons here */}
-    </div>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h4" gutterBottom>
+          Welcome to RoomSync!
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={goToGroupPage}
+          sx={{ mt: 3 }}
+        >
+          Go to Group Page
+        </Button>
+        {/* Add other content or buttons as needed */}
+      </Box>
+    </Container>
   );
 }
 
