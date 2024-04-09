@@ -22,7 +22,7 @@ const LoginPage = () => {
       if (user && user.id) {
         setUser(user);  // Set user in context
         localStorage.setItem('user', JSON.stringify({ ...user, token }));  // Persist user and token
-        navigate('/groups');
+        navigate('/');
       } else {
         setError("Invalid login credentials.");
       }

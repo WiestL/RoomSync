@@ -38,7 +38,7 @@ export const getGroupStatuses = async (groupId) => {
 // Function to get the grocery list of the group
 export const getGroupGroceryList = async (groupId) => {
   try {
-    const response = await axiosApiInstance.get(`/${groupId}/groceries`);
+    const response = await axiosApiInstance.get(`/groups/${groupId}/items`);
     return response.data;
   } catch (error) {
     console.error('Error fetching group grocery list:', error);
