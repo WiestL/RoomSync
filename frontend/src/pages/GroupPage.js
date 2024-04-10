@@ -35,12 +35,13 @@ const GroupPage = () => {
     try {
       const details = await checkGroupMembership(user.id);
       if (details && details.groupId) {
+        setGroupDetails(details)
+        localStorage.setItem('groupDetails', JSON.stringify(details));
         const statuses = await getGroupStatuses(details.groupId);
         const groceries = await getGroupGroceryList(details.groupId);
         setGroupStatuses(statuses);
         setGroupGroceryList(groceries);
-        setGroupDetails(details);
-        localStorage.setItem('groupDetails', JSON.stringify(details));
+        console.log("Set groupDetails state to: ", details);
       } else {
         setError("You are not in any group.");
       }
@@ -113,8 +114,8 @@ const GroupPage = () => {
       {groupDetails ? (
         <Card sx={{ mt: 4 }}>
           <CardContent>
-            <Typography variant="subtitle1">{groupDetails.name}</Typography>
-            <Typography variant="subtitle1">Invitation Code: {groupDetails.invitationCode}</Typography>
+            <Typography variant="subtitle1">Group Name: {groupDetails.groupName || "N/A"}</Typography>
+            <Typography variant="subtitle1">Invitation Code: {groupDetails.invitationCode || "N/A"}</Typography>
             <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
             <List>
               {groupStatuses.map(status => (
@@ -176,7 +177,7 @@ const GroupPage = () => {
             color="secondary"
             onClick={handleCreateGroup}
             disabled={isLoading}
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2 }}  // Corrected this line
           >
             Create Group
           </Button>
@@ -184,6 +185,7 @@ const GroupPage = () => {
       )}
     </Container>
   );
+  
 };
 
 export default GroupPage;

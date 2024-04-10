@@ -48,14 +48,22 @@ const addMemberToGroup = (userId, groupId) => {
     });
 };
 
-const checkGroupMembership = (userId, groupId) => {
+const checkGroupMembership = (userId) => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT 1 FROM group_members WHERE userId = ? AND groupId = ?`;
-        db.get(sql, [userId, groupId], (err, row) => {
+        const sql = `
+            SELECT groups.id AS groupId, groups.groupName, groups.invitationCode
+            FROM group_members
+            JOIN groups ON group_members.groupId = groups.id
+            WHERE group_members.userId = ?`;
+        db.get(sql, [userId], (err, row) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(!!row); // Convert row existence to boolean
+                if (row) {
+                    resolve({ groupId: row.groupId, groupName: row.groupName, invitationCode: row.invitationCode });
+                } else {
+                    resolve(null);  // User is not part of any group
+                }
             }
         });
     });

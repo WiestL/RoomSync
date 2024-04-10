@@ -27,7 +27,7 @@ exports.createGroup = async (req, res) => {
 exports.checkGroupMembership = async (req, res) => {
     const { userId } = req.params;
     try {
-        const group = await findGroupByUserId(userId);
+        const group = await checkGroupMembership(userId);
         if (group) {
             res.json(group);
         } else {
