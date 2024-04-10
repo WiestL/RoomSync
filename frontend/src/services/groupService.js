@@ -13,6 +13,16 @@ export const checkGroupMembership = async (userId) => {
   }
 };
 
+export const createGroup = async(groupName) =>
+{
+  try {
+    const response = await axiosApiInstance.post(`/groups`, { groupName });
+    return response.data;  // This should include { id, invitationCode }
+  } catch (error) {
+      console.error('Error creating group:', error);
+      throw error;  // Optionally, handle this more gracefully
+  }
+}
 // Function to join a group using an invitation code
 export const joinGroupWithCode = async (invitationCode) => {
   try {

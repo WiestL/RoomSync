@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { addGroceryItem, postStatusUpdate } from '../services/editService';
 import { useUserContext } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 import {
-  //Box,
+  Box,
   Button,
   TextField,
   Typography,
@@ -23,7 +24,7 @@ const EditPage = () => {
   const [loading, setLoading] = useState(false);
   const [storedGroupId, setStoredGroupId] = useState(null);
   const { user } = useUserContext();
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Immediately log the current state of 'groupDetails' in local storage
@@ -77,7 +78,12 @@ const EditPage = () => {
       setLoading(false);
     }
   };
-
+  const goToGroupPage = () => {
+    navigate('/groups');
+  };
+  const goToHomePage = () => {
+    navigate('/');
+  };
   return (
     <Container component="main" maxWidth="sm">
       <Card>
@@ -128,6 +134,26 @@ const EditPage = () => {
               Post Status Update
             </Button>
           </form>
+          <Box textAlign= "center">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={goToGroupPage}
+            sx={{ mt: 3 }}
+          >
+            Go to Group Page
+          </Button>
+          </Box>
+          <Box textAlign= 'center'>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={goToHomePage}
+            sx={{ mt: 3 }}
+          >
+            Go to Home Page
+          </Button>
+          </Box>
         </CardContent>
       </Card>
     </Container>

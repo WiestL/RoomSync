@@ -38,7 +38,9 @@ const LoginPage = () => {
       setError(error.message || "Login failed.");
     }
   };
-
+  const goToGroupPage = () => {
+    navigate('/groups');
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -93,6 +95,16 @@ const LoginPage = () => {
             <Link component={RouterLink} to="/register" variant="body2">
               {"Don't have an account? Sign Up"}
             </Link>
+          </Box>
+          <Box textAlign="center">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={goToGroupPage}
+            sx={{ mt: 3 }}
+          >
+            Go to Group Page
+          </Button>
           </Box>
         </Box>
       </Box>

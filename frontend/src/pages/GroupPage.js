@@ -12,7 +12,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList } from '../services/groupService';
+import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList, createGroup } from '../services/groupService';
 import { useUserContext } from '../contexts/UserContext';
 
 const GroupPage = () => {
@@ -20,6 +20,7 @@ const GroupPage = () => {
   const { user } = useUserContext();
   const [groupDetails, setGroupDetails] = useState(null);
   const [invitationCode, setInvitationCode] = useState('');
+  const [newGroupName, setNewGroupName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [groupGroceryList, setGroupGroceryList] = useState([]);
@@ -39,7 +40,7 @@ const GroupPage = () => {
         setGroupStatuses(statuses);
         setGroupGroceryList(groceries);
         setGroupDetails(details);
-        localStorage.setItem('groupDetails', JSON.stringify({ groupId: details.groupId }));
+        localStorage.setItem('groupDetails', JSON.stringify(details));
       } else {
         setError("You are not in any group.");
       }
@@ -80,6 +81,27 @@ const GroupPage = () => {
     }
   };
 
+  const handleCreateGroup = async () => {
+    if (!newGroupName.trim()) {
+      setError('Please enter a group name to create a group.');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const result = await createGroup(newGroupName);
+      if (result && result.groupId) {
+        fetchDetails(); // Refresh to show new group details
+      } else {
+        setError('Failed to create group.');
+      }
+    } catch (err) {
+      setError('An error occurred while trying to create a group.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const goToEditPage = () => {
     navigate('/edit'); // Adjust the route as necessary
   };
@@ -91,8 +113,8 @@ const GroupPage = () => {
       {groupDetails ? (
         <Card sx={{ mt: 4 }}>
           <CardContent>
-            <Typography variant="h5">Your Group</Typography>
-            <Typography variant="subtitle1">Group Name: {groupDetails.name}</Typography>
+            <Typography variant="subtitle1">{groupDetails.name}</Typography>
+            <Typography variant="subtitle1">Invitation Code: {groupDetails.invitationCode}</Typography>
             <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
             <List>
               {groupStatuses.map(status => (
@@ -117,7 +139,7 @@ const GroupPage = () => {
           </CardContent>
         </Card>
       ) : (
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -137,6 +159,26 @@ const GroupPage = () => {
             sx={{ mt: 3, mb: 2 }}
           >
             Join Group
+          </Button>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            label="New Group Name"
+            value={newGroupName}
+            onChange={e => setNewGroupName(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="secondary"
+            onClick={handleCreateGroup}
+            disabled={isLoading}
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Create Group
           </Button>
         </Box>
       )}
