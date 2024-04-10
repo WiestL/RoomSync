@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { addGroceryItem, postStatusUpdate } from '../services/editService';
+import { useUserContext } from '../contexts/UserContext';
 import {
-  Box,
+  //Box,
   Button,
   TextField,
   Typography,
@@ -21,10 +22,13 @@ const EditPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [storedGroupId, setStoredGroupId] = useState(null);
+  const { user } = useUserContext();
+
 
   useEffect(() => {
     // Immediately log the current state of 'groupDetails' in local storage
     console.log('Current groupDetails in storage:', localStorage.getItem('groupDetails'));
+    console.log('Current user details in storage', localStorage.getItem('user'))
   
     // Try to parse the 'groupDetails' and set the groupId state
     const storedGroupDetails = JSON.parse(localStorage.getItem('groupDetails'));
@@ -60,7 +64,8 @@ const EditPage = () => {
     setLoading(true);
     setError('');
     try {
-      const result = await postStatusUpdate(storedGroupId, statusText, wantVisitors);
+      console.log("User ID:", user.id);
+      const result = await postStatusUpdate(user.id, statusText, wantVisitors);
       console.log('Status posted successfully:', result);
       setStatusText('');
       setWantVisitors(false);

@@ -12,9 +12,15 @@ export const addGroceryItem = async (groupId, itemName, quantity) => {
 };
 
 // Function to post a new status update
-export const postStatusUpdate = async (statusText, wantVisitors) => {
+export const postStatusUpdate = async (userId, statusText, wantVisitors) => {
   try {
-    const response = await axiosApiInstance.post(`/status`, { statusText, wantVisitors });
+    const payload = {
+      userId, // Make sure this is being sent as userId, not as statusText
+      statusText,
+      wantVisitors
+    };
+    console.log('Sending payload:', payload); // Log payload to debug
+    const response = await axiosApiInstance.post(`/status`, payload);
     return response.data;
   } catch (error) {
     console.error('Error posting status update:', error);
