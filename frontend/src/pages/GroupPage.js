@@ -35,12 +35,12 @@ const GroupPage = () => {
     try {
       const details = await checkGroupMembership(user.id);
       if (details && details.groupId) {
-        setGroupDetails(details)
-        localStorage.setItem('groupDetails', JSON.stringify(details));
+        setGroupDetails(details)       
         const statuses = await getGroupStatuses(details.groupId);
         const groceries = await getGroupGroceryList(details.groupId);
         setGroupStatuses(statuses);
         setGroupGroceryList(groceries);
+        localStorage.setItem('groupDetails', JSON.stringify(details));
         console.log("Set groupDetails state to: ", details);
       } else {
         setError("You are not in any group.");
@@ -120,7 +120,8 @@ const GroupPage = () => {
             <List>
               {groupStatuses.map(status => (
                 <ListItem key={status.id}>
-                  <ListItemText primary={`${status.name}: ${status.statusText}`} secondary={new Date(status.timestamp).toLocaleString()} />
+                  <ListItemText primary={`${status.name}: ${status.statusText}`} 
+                  secondary={new Date(status.timestamp).toLocaleString() - status.wantVisitors ? "Open to Visitors" : "Not Open to Visitors"} />
                   <Divider />
                 </ListItem>
               ))}
