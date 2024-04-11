@@ -147,4 +147,9 @@ const LoginPage = () => {
   );
 };
 
+export{
+  CustomButton,
+  StyledBox,
+  theme
+}
 export default LoginPage;

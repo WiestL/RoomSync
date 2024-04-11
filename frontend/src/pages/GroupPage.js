@@ -1,25 +1,29 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList, createGroup } from '../services/groupService';
+import { useUserContext } from '../contexts/UserContext';
+import { ThemeProvider } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+//import Card from '@mui/material/Card';
+//import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList, createGroup } from '../services/groupService';
-import { useUserContext } from '../contexts/UserContext';
+//import Alert from '@mui/material/Alert';
+import { theme, StyledBox, CustomButton } from './LoginPage'; 
+
 
 const GroupPage = () => {
   const navigate = useNavigate();
   const { user } = useUserContext();
   const [groupDetails, setGroupDetails] = useState(null);
-  const [invitationCode, setInvitationCode] = useState('');
+  const [invitationCode] = useState('');
   const [newGroupName, setNewGroupName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,13 +39,12 @@ const GroupPage = () => {
     try {
       const details = await checkGroupMembership(user.id);
       if (details && details.groupId) {
-        setGroupDetails(details)       
+        setGroupDetails(details);
         const statuses = await getGroupStatuses(details.groupId);
         const groceries = await getGroupGroceryList(details.groupId);
         setGroupStatuses(statuses);
         setGroupGroceryList(groceries);
         localStorage.setItem('groupDetails', JSON.stringify(details));
-        console.log("Set groupDetails state to: ", details);
       } else {
         setError("You are not in any group.");
       }
@@ -91,7 +94,7 @@ const GroupPage = () => {
     try {
       const result = await createGroup(newGroupName);
       if (result && result.groupId) {
-        fetchDetails(); // Refresh to show new group details
+        fetchDetails();
       } else {
         setError('Failed to create group.');
       }
@@ -103,17 +106,14 @@ const GroupPage = () => {
     }
   };
 
-  const goToEditPage = () => {
-    navigate('/edit'); // Adjust the route as necessary
-  };
-
   return (
-    <Container component="main" maxWidth="sm">
-      {error && <Typography color="error">{error}</Typography>}
-      {isLoading && <CircularProgress />}
-      {groupDetails ? (
-        <Card sx={{ mt: 4 }}>
-          <CardContent>
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="sm">
+        <StyledBox>
+          {error && <Typography color="error">{error}</Typography>}
+          {isLoading && <CircularProgress />}
+          {groupDetails ? (
+          <StyledBox>
             <Typography variant="subtitle1">Group Name: {groupDetails.groupName || "N/A"}</Typography>
             <Typography variant="subtitle1">Invitation Code: {groupDetails.invitationCode || "N/A"}</Typography>
             <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
@@ -130,63 +130,61 @@ const GroupPage = () => {
             <List>
               {groupGroceryList.map(item => (
                 <ListItem key={item.id}>
-                  <ListItemText primary={item.itemName} secondary={`Quantity: ${item.quantity}`} />
+                  <ListItemText primary={item.itemName} 
+                  secondary={`Quantity: ${item.quantity}`} />
                   <Divider />
                 </ListItem>
               ))}
             </List>
-            <Button variant="contained" color="primary" onClick={goToEditPage} sx={{ mt: 2 }}>
+            <Button variant="contained" color="primary" onClick={() => navigate('/edit')} sx={{ mt: 2 }}>
               Manage Group
             </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            label="Group Join Code"
-            value={invitationCode}
-            onChange={e => setInvitationCode(e.target.value)}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleJoinGroup}
-            disabled={isLoading || !user?.id}
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Join Group
-          </Button>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            label="New Group Name"
-            value={newGroupName}
-            onChange={e => setNewGroupName(e.target.value)}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={handleCreateGroup}
-            disabled={isLoading}
-            sx={{ mt: 3, mb: 2 }}  // Corrected this line
-          >
-            Create Group
-          </Button>
-        </Box>
-      )}
-    </Container>
+          </StyledBox>
+        ) : (
+          <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              label="Invitation Code"
+              value={newGroupName}
+              onChange={e => setNewGroupName(e.target.value)}
+            />
+            <CustomButton // Use CustomButton instead of Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              onClick={handleJoinGroup}
+              disabled={isLoading || !user?.id}
+            >
+              Join Group
+            </CustomButton>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              label="New Group Name"
+              value={newGroupName}
+              onChange={e => setNewGroupName(e.target.value)}
+            />
+             <CustomButton // Use CustomButton instead of Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={handleCreateGroup}
+                disabled={isLoading}
+              >
+              Create Group
+              </CustomButton>
+            </Box>
+          )}
+        </StyledBox>
+      </Container>
+    </ThemeProvider>
   );
-  
 };
 
 export default GroupPage;
