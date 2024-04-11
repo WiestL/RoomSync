@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { addGroceryItem, postStatusUpdate } from '../services/editService';
 import { useUserContext } from '../contexts/UserContext';
-import { useNavigate } from 'react-router-dom';
 import {
   TextField,
   Typography,
@@ -22,7 +21,6 @@ const EditPage = () => {
   const [loading, setLoading] = useState(false);
   const [storedGroupId, setStoredGroupId] = useState(null);
   const { user } = useUserContext();
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('Current groupDetails in storage:', localStorage.getItem('groupDetails'));
@@ -72,14 +70,6 @@ const EditPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const goToGroupPage = () => {
-    navigate('/groups');
-  };
-
-  const goToHomePage = () => {
-    navigate('/');
   };
 
   return (
@@ -139,12 +129,6 @@ const EditPage = () => {
               Post Status Update
             </CustomButton>
           </form>
-          <CustomButton onClick={goToGroupPage} sx={{ mt: 3 }}>
-            Go to Group Page
-          </CustomButton>
-          <CustomButton onClick={goToHomePage} sx={{ mt: 3 }}>
-            Go to Home Page
-          </CustomButton>
         </StyledBox>
       </Container>
     </ThemeProvider>

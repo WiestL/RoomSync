@@ -2,21 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkGroupMembership, joinGroupWithCode, getGroupStatuses, getGroupGroceryList, createGroup } from '../services/groupService';
 import { useUserContext } from '../contexts/UserContext';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, Grid } from '@mui/material';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+//import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-//import Card from '@mui/material/Card';
-//import CardContent from '@mui/material/CardContent';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-//import Alert from '@mui/material/Alert';
-import { theme, StyledBox, CustomButton } from './LoginPage'; 
+import { theme, StyledBox, CustomButton } from './LoginPage';
 
 
 const GroupPage = () => {
@@ -108,39 +105,46 @@ const GroupPage = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="sm">
+      <Container component="main" maxWidth="lg">
         <StyledBox>
           {error && <Typography color="error">{error}</Typography>}
           {isLoading && <CircularProgress />}
           {groupDetails ? (
-          <StyledBox>
-            <Typography variant="subtitle1">Group Name: {groupDetails.groupName || "N/A"}</Typography>
-            <Typography variant="subtitle1">Invitation Code: {groupDetails.invitationCode || "N/A"}</Typography>
-            <Typography variant="h6" sx={{ mt: 2 }}>Group Statuses</Typography>
-            <List>
-              {groupStatuses.map(status => (
-                <ListItem key={status.id}>
-                  <ListItemText primary={`${status.name}: ${status.statusText}`} 
-                  secondary={new Date(status.timestamp).toLocaleString() - status.wantVisitors ? "Open to Visitors" : "Not Open to Visitors"} />
-                  <Divider />
-                </ListItem>
-              ))}
-            </List>
-            <Typography variant="h6" sx={{ mt: 2 }}>Grocery List</Typography>
-            <List>
-              {groupGroceryList.map(item => (
-                <ListItem key={item.id}>
-                  <ListItemText primary={item.itemName} 
-                  secondary={`Quantity: ${item.quantity}`} />
-                  <Divider />
-                </ListItem>
-              ))}
-            </List>
-            <Button variant="contained" color="primary" onClick={() => navigate('/edit')} sx={{ mt: 2 }}>
-              Manage Group
-            </Button>
-          </StyledBox>
-        ) : (
+            <>
+              <Typography variant="h4" gutterBottom>Group Name: {groupDetails.groupName || "N/A"}</Typography>
+              <Typography variant="h5" gutterBottom>Invitation Code: {groupDetails.invitationCode || "N/A"}</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6">Group Statuses</Typography>
+                  <List>
+                    {groupStatuses.map(status => (
+                      <ListItem key={status.id}>
+                      <ListItemText 
+                        primary={`${status.name}: ${status.statusText}`} 
+                        secondary={status.wantVisitors === 'true' || status.wantVisitors === 1 ? "Open to Visitors" : "Not Open to Visitors"} 
+                      />
+                      <Divider />
+                    </ListItem>
+                    ))}
+                  </List>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6">Grocery List</Typography>
+                  <List>
+                    {groupGroceryList.map(item => (
+                      <ListItem key={item.id}>
+                        <ListItemText primary={item.itemName} secondary={`Quantity: ${item.quantity}`} />
+                        <Divider />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Grid>
+              </Grid>
+              <CustomButton variant="contained" onClick={() => navigate('/edit')} sx={{ mt: 2 }}>
+                Manage Group
+              </CustomButton>
+            </>
+          ) : (
           <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
               variant="outlined"
