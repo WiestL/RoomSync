@@ -5,10 +5,12 @@ const userRoutes = require('./routes/userRoutes');
 const statusUpdateRoutes = require('./routes/statusUpdateRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const groceryRoutes = require('./routes/groceryRoutes');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use(express.json()); // Middleware for parsing JSON bodies
 app.use(cors());
 

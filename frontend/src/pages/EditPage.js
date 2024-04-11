@@ -14,6 +14,22 @@ import {
   Card,
   CardContent
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+const StyledCard = styled(Card)({
+  backgroundColor: '#489574', // Sage green background
+  borderRadius: '15px',
+  color: 'white', // White text for better readability
+  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.8)', // Drop shadow for depth
+});
+
+const CustomButton = styled(Button)({
+  backgroundColor: '#4EA26F', // Primary button color
+  '&:hover': {
+    backgroundColor: '#2e8b57', // Darker shade on hover
+  },
+  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.6)'
+});
 
 const EditPage = () => {
   const [groceryName, setGroceryName] = useState('');
@@ -27,16 +43,13 @@ const EditPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Immediately log the current state of 'groupDetails' in local storage
     console.log('Current groupDetails in storage:', localStorage.getItem('groupDetails'));
-    console.log('Current user details in storage', localStorage.getItem('user'))
+    console.log('Current user details in storage', localStorage.getItem('user'));
   
-    // Try to parse the 'groupDetails' and set the groupId state
     const storedGroupDetails = JSON.parse(localStorage.getItem('groupDetails'));
     if (storedGroupDetails && storedGroupDetails.groupId) {
       setStoredGroupId(storedGroupDetails.groupId);
     } else {
-      // Log an error if no groupId found in local storage
       console.error('No groupId found in local storage');
       setError('No group found. Please join a group first.');
     }
@@ -64,8 +77,8 @@ const EditPage = () => {
     event.preventDefault();
     setLoading(true);
     setError('');
+    console.log("User ID:", user.id);
     try {
-      console.log("User ID:", user.id);
       const result = await postStatusUpdate(user.id, statusText, wantVisitors);
       console.log('Status posted successfully:', result);
       setStatusText('');
@@ -78,15 +91,18 @@ const EditPage = () => {
       setLoading(false);
     }
   };
+
   const goToGroupPage = () => {
     navigate('/groups');
   };
+
   const goToHomePage = () => {
     navigate('/');
   };
+
   return (
     <Container component="main" maxWidth="sm">
-      <Card>
+      <StyledCard>
         <CardContent>
           <Typography component="h1" variant="h5">
             Group Actions
@@ -102,6 +118,8 @@ const EditPage = () => {
               value={groceryName}
               onChange={e => setGroceryName(e.target.value)}
               required
+              InputLabelProps={{ style: { color: 'white' } }}
+              inputProps={{ style: { color: 'white' } }}
             />
             <TextField
               margin="normal"
@@ -111,10 +129,12 @@ const EditPage = () => {
               value={quantity}
               onChange={e => setQuantity(e.target.value)}
               required
+              InputLabelProps={{ style: { color: 'white' } }}
+              inputProps={{ style: { color: 'white' } }}
             />
-            <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading}>
+            <CustomButton type="submit" fullWidth variant="contained" disabled={loading}>
               Add Grocery Item
-            </Button>
+            </CustomButton>
           </form>
           <form onSubmit={handlePostStatusUpdate}>
             <TextField
@@ -125,37 +145,38 @@ const EditPage = () => {
               value={statusText}
               onChange={e => setStatusText(e.target.value)}
               required
+              InputLabelProps={{ style: { color: 'white' } }}
+              inputProps={{ style: { color: 'white' } }}
             />
             <FormControlLabel
-              control={<Checkbox checked={wantVisitors} onChange={e => setWantVisitors(e.target.checked)} />}
+              control={<Checkbox checked={wantVisitors} onChange={e => setWantVisitors(e.target.checked)} style={{ color: 'white' }} />}
               label="Want Visitors?"
+              sx={{ color: 'white' }}
             />
-            <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading}>
+            <CustomButton type="submit" fullWidth variant="contained" disabled={loading}>
               Post Status Update
-            </Button>
+            </CustomButton>
           </form>
-          <Box textAlign= "center">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={goToGroupPage}
-            sx={{ mt: 3 }}
-          >
-            Go to Group Page
-          </Button>
+          <Box textAlign="center">
+            <CustomButton
+              variant="contained"
+              onClick={goToGroupPage}
+              sx={{ mt: 3 }}
+            >
+              Go to Group Page
+            </CustomButton>
           </Box>
-          <Box textAlign= 'center'>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={goToHomePage}
-            sx={{ mt: 3 }}
-          >
-            Go to Home Page
-          </Button>
+          <Box textAlign='center'>
+            <CustomButton
+              variant="contained"
+              onClick={goToHomePage}
+              sx={{ mt: 3 }}
+            >
+              Go to Home Page
+            </CustomButton>
           </Box>
         </CardContent>
-      </Card>
+      </StyledCard>
     </Container>
   );
 };
